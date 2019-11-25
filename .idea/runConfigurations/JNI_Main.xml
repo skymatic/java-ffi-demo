@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="JNI Main" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="de.skymatic.ffi.jni.Main" />
+    <module name="FFI" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=$ProjectFileDir$/libs -ea" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="de.skymatic.ffi.panama.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

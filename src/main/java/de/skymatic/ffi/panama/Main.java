@@ -5,6 +5,7 @@ import java.foreign.Scope;
 import java.foreign.memory.Callback;
 import java.foreign.memory.Pointer;
 
+import de.skymatic.ffi.common.Dimensions;
 import de.skymatic.libpng.png_lib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +20,14 @@ public class Main {
 	
 	public static void main(String[] args) {
 		LOG.info("libpng version {}", Pointer.toString(png_lib.PNG_LIBPNG_VER_STRING));
-		
+		Dimensions dimensions = getDimensions("src/main/resources/bot.png");
+		LOG.info("png dimensions are {}x{} px", dimensions.width, dimensions.height);
+	}
+	
+	private static Dimensions getDimensions(String path) {
 		try (Scope scope = Scope.globalScope().fork()) {
 			// fopen
-			var filename = scope.allocateCString("src/main/resources/bot.png");
+			var filename = scope.allocateCString(path);
 			var mode = scope.allocateCString("r");
 			var file = stdio_lib.fopen(filename, mode);
 			assert !file.isNull() : "failed to fopen file";
@@ -37,8 +42,7 @@ public class Main {
 			var width = scope.allocate(NativeTypes.INT);
 			var height = scope.allocate(NativeTypes.INT);
 			png_lib.png_get_IHDR(png_ptr, info_ptr, width, height, Pointer.ofNull(), Pointer.ofNull(), Pointer.ofNull(), Pointer.ofNull(), Pointer.ofNull());
-			LOG.info("png dimensions are {}x{} px", width.get(), height.get());
-
+			
 			// cleanup
 			var info_ptr_ptr = scope.allocate(info_ptr.type().pointer());
 			info_ptr_ptr.set(info_ptr);
@@ -48,8 +52,10 @@ public class Main {
 
 			// fclose
 			stdio_lib.fclose(file);
+			
+			
+			return new Dimensions(width.get(), height.get());
 		}
-		
 	}
 	
 }
